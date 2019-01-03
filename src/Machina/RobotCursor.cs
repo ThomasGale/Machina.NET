@@ -60,6 +60,7 @@ namespace Machina
         public double extrusionRate;
         public Dictionary<RobotPartType, double> partTemperature;
         public double extrudedLength, prevExtrudedLength;  // the length of filament that has been extruded, i.e. the "E" parameter
+        public ActionDEDParmaters actionDEDParmater; // Testing the current DED parameters.
 
         /// <summary>
         /// Last Action that was applied to this cursor
@@ -119,7 +120,7 @@ namespace Machina
         /// </summary>
         /// <param name="name"></param>
         /// <param name="applyImmediately"></param>
-        public RobotCursor(Control parentControl, string name,  bool applyImmediately, RobotCursor childCursor)
+        public RobotCursor(Control parentControl, string name, bool applyImmediately, RobotCursor childCursor)
         {
             this.parentControl = parentControl;
             this.logger = parentControl.logger;
@@ -147,7 +148,7 @@ namespace Machina
             else if (this.parentControl.parentRobot.Brand == RobotType.KUKA)
             {
                 compiler = new CompilerKUKA();
-            } 
+            }
             else if (this.parentControl.parentRobot.Brand == RobotType.ZMORPH)
             {
                 compiler = new CompilerZMORPH();
@@ -218,18 +219,21 @@ namespace Machina
             extrusionRate = 0;
             extrudedLength = 0;
 
+            // DED
+            actionDEDParmater = null;
+
             this.initialized = true;
             return this.initialized;
         }
-        
-        
+
+
         /// <summary>
         /// Add an action to this cursor's buffer, to be released whenever assigned priority.
         /// </summary>
         /// <param name="action"></param>
         public bool Issue(Action action)
         {
-            lock(actionBufferLock)
+            lock (actionBufferLock)
             {
                 actionBuffer.Add(action);
                 if (applyImmediately)
@@ -238,7 +242,7 @@ namespace Machina
                 }
                 return true;
             }
-            
+
         }
 
         /// <summary>
@@ -247,7 +251,7 @@ namespace Machina
         /// <returns></returns>
         public bool ApplyNextAction()
         {
-            lock(actionBufferLock)
+            lock (actionBufferLock)
             {
                 lastAction = actionBuffer.GetNext();
                 if (lastAction == null) return false;
@@ -315,7 +319,7 @@ namespace Machina
         /// <returns></returns>
         public Action GetLastAction()
         {
-            lock(actionBufferLock)
+            lock (actionBufferLock)
             {
                 return actionBuffer.GetLast();
             }
@@ -372,7 +376,7 @@ namespace Machina
 
         public void LogBufferedActions()
         {
-            lock(actionBufferLock)
+            lock (actionBufferLock)
             {
                 actionBuffer.DebugBufferedActions();
             }
@@ -406,7 +410,7 @@ namespace Machina
             this.position = pos;
             this.rotation = rot;
             this.axes = ax;
-            this.externalAxesCartesian = extax;        
+            this.externalAxesCartesian = extax;
         }
 
 
@@ -450,6 +454,8 @@ namespace Machina
             { typeof (ActionExtrusion),                 (act, robCur) => robCur.ApplyAction((ActionExtrusion) act) },
             { typeof (ActionExtrusionRate),             (act, robCur) => robCur.ApplyAction((ActionExtrusionRate) act) },
             { typeof (ActionInitialization),            (act, robCur) => robCur.ApplyAction((ActionInitialization) act) },
+            { typeof (ActionDEDParmaters),              (act, robCur) => robCur.ApplyAction((ActionDEDParmaters) act) },
+            { typeof (ActionDED),                       (act, robCur) => robCur.ApplyAction((ActionDED) act) },
             { typeof (ActionExternalAxis),              (act, robCur) => robCur.ApplyAction((ActionExternalAxis) act) },
             { typeof (ActionCustomCode),                (act, robCur) => robCur.ApplyAction((ActionCustomCode) act) },
             { typeof (ActionArmAngle),                  (act, robCur) => robCur.ApplyAction((ActionArmAngle) act) }
@@ -1000,7 +1006,7 @@ namespace Machina
 
                 ApplyToolTransformToCursor(this, this.tool, logger, _logRelativeActions);
             }
-            
+
             return true;
         }
 
@@ -1159,6 +1165,45 @@ namespace Machina
         }
 
 
+        /// <summary>
+        /// TESTING - DED
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public bool ApplyAction(ActionDEDParmaters action)
+        {
+            this.actionDEDParmater = action;
+            logger.Debug($"Setting Current DED Parameters (id {action.Id}):  {action}");
+
+            return true;
+        }
+
+        /// <summary>
+        /// TESTING - DED
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public bool ApplyAction(ActionDED action)
+        {
+            Vector newPos;
+            Rotation newRot;
+
+            // Absolute transform
+            newPos = new Vector(action.translation);
+            newRot = new Rotation(action.rotation);
+
+            prevPosition = position;
+            position = newPos;
+            prevRotation = rotation;
+            rotation = newRot;
+
+            prevAxes = axes;
+            axes = null;  // flag joints as null to avoid Joint instructions using obsolete data
+
+            return true;
+        }
+
+
 
         //  ╔═╗═╗ ╦╔╦╗╔═╗╦═╗╔╗╔╔═╗╦      ╔═╗═╗ ╦╦╔═╗
         //  ║╣ ╔╩╦╝ ║ ║╣ ╠╦╝║║║╠═╣║      ╠═╣╔╩╦╝║╚═╗
@@ -1172,7 +1217,7 @@ namespace Machina
                 {
                     this.externalAxesCartesian = new ExternalAxes();
                 }
-                
+
 
                 if (action.relative)
                 {
@@ -1346,7 +1391,7 @@ namespace Machina
 
 
         public override string ToString() => $"{name}: {motionType} p{position} r{rotation} j{axes} a{acceleration} v{speed} p{precision} {(this.tool == null ? "" : "t" + this.tool)}";
-        
+
 
     }
 }

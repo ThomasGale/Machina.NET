@@ -139,6 +139,12 @@ namespace Machina
                     customLines.Add($"  {(a as ActionCustomCode).statement}");
                 }
 
+                // Add any weld and seam data to the variables section.
+                if (a.Type == ActionType.DEDParameter)
+                {
+                    variableLines.Add(string.Format("  PERS seamdata seam{0} := {1};\n  PERS welddata weld{0} := {2};", writer.actionDEDParmater.Id, GetSeamDataValue(writer),
+                      GetWeldDataValue(writer)));
+                }
 
 
                 // Generate program
@@ -288,7 +294,6 @@ namespace Machina
                 case ActionType.Transformation:
                     dec = string.Format("  CONST robtarget target{0} := {1};", id, GetRobTargetValue(cursor));
                     break;
-
                 case ActionType.Axes:
                     dec = string.Format("  CONST jointtarget target{0} := {1};", id, GetJointTargetValue(cursor));
                     break;
@@ -342,6 +347,42 @@ namespace Machina
                         cursor.motionType == MotionType.Joint ? "MoveJ" : "MoveL",
                         id,
                         velNames[cursor.speed],
+                        zoneNames[cursor.precision],
+                        cursor.tool == null ? "Tool0" : toolNames[cursor.tool],
+                        "WObj:=WObj0");
+                    break;
+                case ActionType.DEDParameter:
+                    var dedParameters = (ActionDEDParmaters)action;
+                    dec = string.Format("    {0} DEDParameters: seam{1} and weld{1} are now active",  // this action has no actual RAPID instruction, just add a comment
+                        commChar,
+                        dedParameters.Id);
+                    break;
+                case ActionType.DED:
+                    // Get the DED object;
+                    var actionDED = action as ActionDED;
+
+                    // First get the motion mode (Start, Mid, End)
+                    string motionCommand = "UNKNOWN";
+
+                    switch (actionDED.mode)
+                    {
+                        case ActionDED.DEDMode.Start:
+                            motionCommand = "ArcLStart";
+                            break;
+                        case ActionDED.DEDMode.Mid:
+                            motionCommand = "ArcL";
+                            break;
+                        case ActionDED.DEDMode.End:
+                            motionCommand = "ArcLEnd";
+                            break;
+                    }
+
+                    dec = string.Format("    {0} target{1}, {2}, seam{3}, weld{4}, {5}, {6}\\{7};",
+                        motionCommand,
+                        id,
+                        velNames[cursor.speed],
+                        cursor.actionDEDParmater.Id,
+                        cursor.actionDEDParmater.Id,
                         zoneNames[cursor.precision],
                         cursor.tool == null ? "Tool0" : toolNames[cursor.tool],
                         "WObj:=WObj0");
@@ -493,6 +534,37 @@ namespace Machina
                         "WObj:=WObj0");
                     break;
 
+                case ActionType.DED:
+                    // Get the DED object;
+                    var actionDED = action as ActionDED;
+
+                    // First get the motion mode (Start, Mid, End)
+                    string motionCommand = "UNKNOWN";
+
+                    switch (actionDED.mode)
+                    {
+                        case ActionDED.DEDMode.Start:
+                            motionCommand = "ArcLStart";
+                            break;
+                        case ActionDED.DEDMode.Mid:
+                            motionCommand = "ArcL";
+                            break;
+                        case ActionDED.DEDMode.End:
+                            motionCommand = "ArcLEnd";
+                            break;
+                    }
+
+                    dec = string.Format("    {0} {1}, {2}, seam{3}, weld{4}, {5}, {6}\\{7};",
+                        motionCommand,
+                        GetRobTargetValue(cursor),
+                        velNames[cursor.speed],
+                        cursor.actionDEDParmater.Id,
+                        cursor.actionDEDParmater.Id,
+                        zoneNames[cursor.precision],
+                        cursor.tool == null ? "Tool0" : toolNames[cursor.tool],
+                        "WObj:=WObj0");
+                    break;
+
                 case ActionType.Axes:
                     dec = string.Format("    MoveAbsJ {0}, {1}, {2}, {3}\\{4};",
                         GetJointTargetValue(cursor),
@@ -603,6 +675,28 @@ namespace Machina
                 cursor.rotation.Q.ToString(false),
                 "[0,0,0,0]",  // no IK at this moment
                 GetExternalJointsRobTargetValue(cursor)); 
+        }
+
+        /// <summary>
+        /// DED TESTING!
+        /// </summary>
+        /// <param name="actionDEDParmater"></param>
+        /// <returns></returns>
+        static internal string GetSeamDataValue(RobotCursor cursor)
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "[0,1,[{0},{1},{2},{3},{4},0,0,0,0],0,0,0,0,0,[0,0,0,0,0,0,0,0,0],0,0,[0,0,0,0,0,0,0,0,0],0,0,[0,0,0,0,0,0,0,0,0],1]", cursor.actionDEDParmater.synergicLine, cursor.actionDEDParmater.weldingMode, cursor.actionDEDParmater.arcLengthCorrection, cursor.actionDEDParmater.materialFlow, cursor.actionDEDParmater.dyanamicEPENCorrection);
+        }
+
+        /// <summary>
+        /// DED TESTING!
+        /// </summary>
+        /// <param name="actionDEDParmater"></param>
+        /// <returns></returns>
+        static internal string GetWeldDataValue(RobotCursor cursor)
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "[{0},0,[{1},{2},{3},{4},{5},0,0,0,0],[0,0,0,0,0,0,0,0,0]]", cursor.actionDEDParmater.travelSpeed, cursor.actionDEDParmater.synergicLine, cursor.actionDEDParmater.weldingMode, cursor.actionDEDParmater.arcLengthCorrection, cursor.actionDEDParmater.materialFlow, cursor.actionDEDParmater.dyanamicEPENCorrection);
         }
 
         /// <summary>

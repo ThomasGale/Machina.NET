@@ -82,6 +82,7 @@
     <Compile Include="Actions\ActionComment.cs" />
     <Compile Include="Actions\ActionCoordinates.cs" />
     <Compile Include="Actions\ActionCustomCode.cs" />
+    <Compile Include="Actions\ActionDEDParameters.cs" />
     <Compile Include="Actions\ActionDefineTool.cs" />
     <Compile Include="Actions\ActionDetachTool.cs" />
     <Compile Include="Actions\ActionExtrusion.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Actions\ActionRotation.cs" />
     <Compile Include="Actions\ActionSpeed.cs" />
     <Compile Include="Actions\ActionTemperature.cs" />
+    <Compile Include="Actions\ActionDED.cs" />
     <Compile Include="Actions\ActionTransformation.cs" />
     <Compile Include="Actions\ActionTranslation.cs" />
     <Compile Include="Actions\ActionWait.cs" />

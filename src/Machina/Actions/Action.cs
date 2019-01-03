@@ -19,6 +19,8 @@ namespace Machina
         Translation,
         Rotation,
         Transformation,
+        DED,
+        DEDParameter,
         Axes,
         Message,
         Wait,
