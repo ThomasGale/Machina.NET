@@ -60,6 +60,10 @@ namespace Machina
         public double extrusionRate;
         public Dictionary<RobotPartType, double> partTemperature;
         public double extrudedLength, prevExtrudedLength;  // the length of filament that has been extruded, i.e. the "E" parameter
+
+        // DED Testing.
+        public string toolRef;
+        public string workplaneRef;
         public ActionDEDParmaters actionDEDParmater; // Testing the current DED parameters.
 
         /// <summary>
@@ -454,6 +458,8 @@ namespace Machina
             { typeof (ActionExtrusion),                 (act, robCur) => robCur.ApplyAction((ActionExtrusion) act) },
             { typeof (ActionExtrusionRate),             (act, robCur) => robCur.ApplyAction((ActionExtrusionRate) act) },
             { typeof (ActionInitialization),            (act, robCur) => robCur.ApplyAction((ActionInitialization) act) },
+            { typeof (ActionSetToolRef),                (act, robCur) => robCur.ApplyAction((ActionSetToolRef) act) },
+            { typeof (ActionSetWorkplaneRef),           (act, robCur) => robCur.ApplyAction((ActionSetWorkplaneRef) act) },
             { typeof (ActionDEDParmaters),              (act, robCur) => robCur.ApplyAction((ActionDEDParmaters) act) },
             { typeof (ActionDED),                       (act, robCur) => robCur.ApplyAction((ActionDED) act) },
             { typeof (ActionExternalAxis),              (act, robCur) => robCur.ApplyAction((ActionExternalAxis) act) },
@@ -1164,6 +1170,34 @@ namespace Machina
             return true;
         }
 
+        /// <summary>
+        /// TESTING - DED
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public bool ApplyAction(ActionSetToolRef action)
+        {
+            // If there is a current normal Tool - error. 
+            if (this.tool != null)
+            {
+                logger.Warning("Unable to a set a ToolRef, there is a tool attached.");
+                return false;
+            }
+
+            this.toolRef = action.toolName;
+            return true;
+        }
+
+        /// <summary>
+        /// TESTING - DED
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public bool ApplyAction(ActionSetWorkplaneRef action)
+        {
+            this.workplaneRef = action.workplaneName;
+            return true;
+        }
 
         /// <summary>
         /// TESTING - DED

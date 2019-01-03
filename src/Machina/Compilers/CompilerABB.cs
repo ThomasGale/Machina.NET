@@ -278,9 +278,6 @@ namespace Machina
             return module;
         }
 
-
-
-
         //  ╦ ╦╔╦╗╦╦  ╔═╗
         //  ║ ║ ║ ║║  ╚═╗
         //  ╚═╝ ╩ ╩╩═╝╚═╝
@@ -351,42 +348,57 @@ namespace Machina
                         cursor.tool == null ? "Tool0" : toolNames[cursor.tool],
                         "WObj:=WObj0");
                     break;
-                case ActionType.DEDParameter:
-                    var dedParameters = (ActionDEDParmaters)action;
-                    dec = string.Format("    {0} DEDParameters: seam{1} and weld{1} are now active",  // this action has no actual RAPID instruction, just add a comment
-                        commChar,
-                        dedParameters.Id);
-                    break;
-                case ActionType.DED:
-                    // Get the DED object;
-                    var actionDED = action as ActionDED;
 
-                    // First get the motion mode (Start, Mid, End)
-                    string motionCommand = "UNKNOWN";
+                // Not suppored for non-inline. 
 
-                    switch (actionDED.mode)
-                    {
-                        case ActionDED.DEDMode.Start:
-                            motionCommand = "ArcLStart";
-                            break;
-                        case ActionDED.DEDMode.Mid:
-                            motionCommand = "ArcL";
-                            break;
-                        case ActionDED.DEDMode.End:
-                            motionCommand = "ArcLEnd";
-                            break;
-                    }
+                //case ActionType.SetToolRef:
+                //    var toolRef = (ActionSetToolRef)action;
+                //    dec = string.Format("    {0} Tool \"{1}\" referenced",  // this action has no actual RAPID instruction, just add a comment
+                //        commChar,
+                //        toolRef.toolName);
+                //    break;
+                //case ActionType.SetWorkplaneRef:
+                //    var workplaneRef = (ActionSetWorkplaneRef)action;
+                //    dec = string.Format("    {0} Workplane \"{1}\" referenced",  // this action has no actual RAPID instruction, just add a comment
+                //        commChar,
+                //        workplaneRef.workplaneName);
+                //    break;
+                //case ActionType.DEDParameter:
+                //    var dedParameters = (ActionDEDParmaters)action;
+                //    dec = string.Format("    {0} DEDParameters: seam{1} and weld{1} are now active",  // this action has no actual RAPID instruction, just add a comment
+                //        commChar,
+                //        dedParameters.Id);
+                //    break;
+                //case ActionType.DED:
+                //    // Get the DED object;
+                //    var actionDED = action as ActionDED;
 
-                    dec = string.Format("    {0} target{1}, {2}, seam{3}, weld{4}, {5}, {6}\\{7};",
-                        motionCommand,
-                        id,
-                        velNames[cursor.speed],
-                        cursor.actionDEDParmater.Id,
-                        cursor.actionDEDParmater.Id,
-                        zoneNames[cursor.precision],
-                        cursor.tool == null ? "Tool0" : toolNames[cursor.tool],
-                        "WObj:=WObj0");
-                    break;
+                //    // First get the motion mode (Start, Mid, End)
+                //    string motionCommand = "UNKNOWN";
+
+                //    switch (actionDED.mode)
+                //    {
+                //        case ActionDED.DEDMode.Start:
+                //            motionCommand = "ArcLStart";
+                //            break;
+                //        case ActionDED.DEDMode.Mid:
+                //            motionCommand = "ArcL";
+                //            break;
+                //        case ActionDED.DEDMode.End:
+                //            motionCommand = "ArcLEnd";
+                //            break;
+                //    }
+
+                //    dec = string.Format("    {0} target{1}, {2}, seam{3}, weld{4}, {5}, {6}\\WObj:={7};",
+                //        motionCommand,
+                //        id,
+                //        velNames[cursor.speed],
+                //        cursor.actionDEDParmater.Id,
+                //        cursor.actionDEDParmater.Id,
+                //        zoneNames[cursor.precision],
+                //        string.IsNullOrEmpty(cursor.toolRef) ? "Tool0" : cursor.toolRef,
+                //        string.IsNullOrEmpty(cursor.workplaneRef) ? "WObj0" : cursor.workplaneRef);
+                //    break;
 
                 case ActionType.Axes:
                     dec = string.Format("    MoveAbsJ target{0}, {1}, {2}, {3}\\{4};",
@@ -534,6 +546,24 @@ namespace Machina
                         "WObj:=WObj0");
                     break;
 
+                case ActionType.SetToolRef:
+                    var toolRef = (ActionSetToolRef)action;
+                    dec = string.Format("    {0} Tool \"{1}\" referenced",  // this action has no actual RAPID instruction, just add a comment
+                        commChar,
+                        toolRef.toolName);
+                    break;
+                case ActionType.SetWorkplaneRef:
+                    var workplaneRef = (ActionSetWorkplaneRef)action;
+                    dec = string.Format("    {0} Workplane \"{1}\" referenced",  // this action has no actual RAPID instruction, just add a comment
+                        commChar,
+                        workplaneRef.workplaneName);
+                    break;
+                case ActionType.DEDParameter:
+                    var dedParameters = (ActionDEDParmaters)action;
+                    dec = string.Format("    {0} DEDParameters: seam{1} and weld{1} are now active",  // this action has no actual RAPID instruction, just add a comment
+                        commChar,
+                        dedParameters.Id);
+                    break;
                 case ActionType.DED:
                     // Get the DED object;
                     var actionDED = action as ActionDED;
@@ -554,15 +584,15 @@ namespace Machina
                             break;
                     }
 
-                    dec = string.Format("    {0} {1}, {2}, seam{3}, weld{4}, {5}, {6}\\{7};",
+                    dec = string.Format("    {0} {1}, {2}, seam{3}, weld{4}, {5}, {6}\\WObj:={7};",
                         motionCommand,
                         GetRobTargetValue(cursor),
                         velNames[cursor.speed],
                         cursor.actionDEDParmater.Id,
                         cursor.actionDEDParmater.Id,
                         zoneNames[cursor.precision],
-                        cursor.tool == null ? "Tool0" : toolNames[cursor.tool],
-                        "WObj:=WObj0");
+                        string.IsNullOrEmpty(cursor.toolRef) ? "Tool0" : cursor.toolRef,
+                        string.IsNullOrEmpty(cursor.workplaneRef) ? "WObj0" : cursor.workplaneRef);
                     break;
 
                 case ActionType.Axes:

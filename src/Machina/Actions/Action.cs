@@ -19,6 +19,8 @@ namespace Machina
         Translation,
         Rotation,
         Transformation,
+        SetWorkplaneRef,
+        SetToolRef,
         DED,
         DEDParameter,
         Axes,
