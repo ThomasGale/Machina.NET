@@ -41,6 +41,15 @@ namespace Machina
             return string.Format("Set DED Parameters to: travelSpeed {0} and materialFlow {1}", travelSpeed, materialFlow);
         }
 
-        public override string ToInstruction() => null;
+        public override string ToInstruction()
+        {
+            return string.Format("DEDParameter({0},{1},{2},{3},{4},{5});",
+                synergicLine,
+                weldingMode,
+                arcLengthCorrection,
+                dyanamicEPENCorrection,
+                travelSpeed,
+                materialFlow);
+        }
     }
 }
