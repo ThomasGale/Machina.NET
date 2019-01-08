@@ -643,7 +643,7 @@ namespace Machina
         /// <param name="inlineTargets">Write inline targets on action statements, or declare them as independent variables?</param>
         /// <param name="humanComments">If true, a human-readable description will be added to each line of code</param>
         /// <returns></returns>
-        public List<string> Export(bool inlineTargets, bool humanComments)
+        public List<string> Export(bool inlineTargets, bool humanComments, bool conf)
         {
             if (_controlMode != ControlType.Offline)
             {
@@ -654,7 +654,7 @@ namespace Machina
             //List<Action> actions = actionBuffer.GetAllPending();
             //return programGenerator.UNSAFEProgramFromActions("BRobotProgram", writeCursor, actions);
 
-            return ReleaseCursor.ProgramFromBuffer(inlineTargets, humanComments);
+            return ReleaseCursor.ProgramFromBuffer(inlineTargets, humanComments, conf);
         }
 
         /// <summary>
@@ -664,11 +664,11 @@ namespace Machina
         /// <param name="inlineTargets">Write inline targets on action statements, or declare them as independent variables?</param>
         /// <param name="humanComments">If true, a human-readable description will be added to each line of code</param>
         /// <returns></returns>
-        public bool Export(string filepath, bool inlineTargets, bool humanComments)
+        public bool Export(string filepath, bool inlineTargets, bool humanComments, bool conf)
         {
             // @TODO: add some filepath sanity here
 
-            List<string> programCode = Export(inlineTargets, humanComments);
+            List<string> programCode = Export(inlineTargets, humanComments, conf);
             if (programCode == null) return false;
             return SaveStringListToFile(programCode, filepath);
         }

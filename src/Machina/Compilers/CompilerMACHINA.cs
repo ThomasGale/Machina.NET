@@ -30,7 +30,7 @@ namespace Machina
 
         internal CompilerMACHINA() : base(COMMENT_CHAR) { }
 
-        public override List<string> UNSAFEProgramFromBuffer(string programName, RobotCursor writer, bool block, bool inlineTargets, bool humanComments)
+        public override List<string> ProgramFromBuffer(string programName, RobotCursor writer, bool block, bool inlineTargets, bool humanComments, bool conf = false)
         {
             // Which pending Actions are used for this program?
             // Copy them without flushing the buffer.

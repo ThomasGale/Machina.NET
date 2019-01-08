@@ -46,15 +46,14 @@ namespace Machina
 
         /// <summary>
         /// Creates a textual program representation of a set of Actions using native RAPID Laguage.
-        /// WARNING: this method is EXTREMELY UNSAFE; it performs no IK calculations, assigns default [0,0,0,0] 
+        /// WARNING: this method can be EXTREMELY UNSAFE - if run with confJ and confL off.
         /// robot configuration and assumes the robot controller will figure out the correct one.
         /// </summary>
         /// <param name="programName"></param>
         /// <param name="writePointer"></param>
         /// <param name="block">Use actions in waiting queue or buffer?</param>
         /// <returns></returns>
-        //public override List<string> UNSAFEProgramFromBuffer(string programName, RobotCursor writePointer, bool block)
-        public override List<string> UNSAFEProgramFromBuffer(string programName, RobotCursor writer, bool block, bool inlineTargets, bool humanComments)
+        public override List<string> ProgramFromBuffer(string programName, RobotCursor writer, bool block, bool inlineTargets, bool humanComments, bool conf = false)
         {
             ADD_ACTION_STRING = humanComments;
 
@@ -258,8 +257,8 @@ namespace Machina
 
             // MAIN PROCEDURE
             module.Add("  PROC main()");
-            module.Add(@"    ConfJ \Off;");
-            module.Add(@"    ConfL \Off;");
+            module.Add($@"    ConfJ \{ (conf ? "On" : "Off") };");
+            module.Add($@"    ConfL \{ (conf ? "On" : "Off") };");
             module.Add("");
 
             // Instructions
@@ -545,6 +544,15 @@ namespace Machina
                         cursor.tool == null ? "Tool0" : toolNames[cursor.tool],
                         "WObj:=WObj0");
                     break;
+                case ActionType.SolvedTransformation:
+                    dec = string.Format("    {0} {1}, {2}, {3}, {4}\\{5};",
+                        cursor.motionType == MotionType.Joint ? "MoveJ" : "MoveL",
+                        GetSolvedRobTargetValue(cursor),
+                        velNames[cursor.speed],
+                        zoneNames[cursor.precision],
+                        string.IsNullOrEmpty(cursor.toolRef) ? "Tool0" : cursor.toolRef,
+                        string.IsNullOrEmpty(cursor.workplaneRef) ? "WObj0" : cursor.workplaneRef);
+                    break;
 
                 case ActionType.SetToolRef:
                     var toolRef = (ActionSetToolRef)action;
@@ -564,29 +572,29 @@ namespace Machina
                         commChar,
                         dedParameters.Id);
                     break;
-                case ActionType.DED:
+                case ActionType.ActionDEDSolvedTransform:
                     // Get the DED object;
-                    var actionDED = action as ActionDED;
+                    var actionDED = action as ActionDEDSolvedTransform;
 
                     // First get the motion mode (Start, Mid, End)
                     string motionCommand = "UNKNOWN";
 
                     switch (actionDED.mode)
                     {
-                        case ActionDED.DEDMode.Start:
+                        case ActionDEDSolvedTransform.DEDMode.Start:
                             motionCommand = "ArcLStart";
                             break;
-                        case ActionDED.DEDMode.Mid:
+                        case ActionDEDSolvedTransform.DEDMode.Mid:
                             motionCommand = "ArcL";
                             break;
-                        case ActionDED.DEDMode.End:
+                        case ActionDEDSolvedTransform.DEDMode.End:
                             motionCommand = "ArcLEnd";
                             break;
                     }
 
                     dec = string.Format("    {0} {1}, {2}, seam{3}, weld{4}, {5}, {6}\\WObj:={7};",
                         motionCommand,
-                        GetRobTargetValue(cursor),
+                        GetSolvedRobTargetValue(cursor),
                         velNames[cursor.speed],
                         cursor.actionDEDParmater.Id,
                         cursor.actionDEDParmater.Id,
@@ -705,6 +713,21 @@ namespace Machina
                 cursor.rotation.Q.ToString(false),
                 "[0,0,0,0]",  // no IK at this moment
                 GetExternalJointsRobTargetValue(cursor)); 
+        }
+
+        /// <summary>
+        /// Returns an RAPID robtarget representation of the current state of the cursor.
+        /// Using the config data appended to the robot cursor.
+        /// </summary>
+        /// <returns></returns>
+        static internal string GetSolvedRobTargetValue(RobotCursor cursor)
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "[{0}, {1}, {2}, {3}]",
+                cursor.position.ToString(false),
+                cursor.rotation.Q.ToString(false),
+                $"[{cursor.Cf1},{cursor.Cf4},{cursor.Cf6},{cursor.Cfx}]",
+                GetExternalJointsRobTargetValue(cursor));
         }
 
         /// <summary>

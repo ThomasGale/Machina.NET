@@ -305,9 +305,9 @@ namespace Machina
         /// <param name="inlineTargets">Write inline targets on action statements, or declare them as independent variables?</param>
         /// <param name="humanComments">If true, a human-readable description will be added to each line of code</param>
         /// <returns></returns>
-        public List<string> Compile(bool inlineTargets = true, bool humanComments = true)
+        public List<string> Compile(bool inlineTargets = true, bool humanComments = true, bool conf = false)
         {
-            return c.Export(inlineTargets, humanComments);
+            return c.Export(inlineTargets, humanComments, conf);
         }
 
         /// <summary>
@@ -318,9 +318,9 @@ namespace Machina
         /// <param name="inlineTargets">Write inline targets on action statements, or declare them as independent variables?</param>
         /// <param name="humanComments">If true, a human-readable description will be added to each line of code</param>
         /// <returns></returns>
-        public bool Compile(string filepath, bool inlineTargets = true, bool humanComments = true)
+        public bool Compile(string filepath, bool inlineTargets = true, bool humanComments = true, bool conf = false)
         {
-            return c.Export(filepath, inlineTargets, humanComments);
+            return c.Export(filepath, inlineTargets, humanComments, conf);
         }
 
         ///// <summary>

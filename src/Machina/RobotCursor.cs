@@ -33,6 +33,9 @@ namespace Machina
         public string name;
         public Vector position, prevPosition;
         public Rotation rotation, prevRotation;
+
+        // New config data.
+        public int Cf1 = 0, Cf4 = 0, Cf6 = 0, Cfx = 0;
         public Joints axes, prevAxes;
         public double speed;
         public double acceleration;
@@ -362,9 +365,9 @@ namespace Machina
         /// <param name="inlineTargets">Write inline targets on action statements, or declare them as independent variables?</param>
         /// <param name="humanComments">If true, a human-readable description will be added to each line of code</param>
         /// <returns></returns>
-        public List<string> ProgramFromBuffer(bool inlineTargets, bool humanComments)
+        public List<string> ProgramFromBuffer(bool inlineTargets, bool humanComments, bool conf)
         {
-            return compiler.UNSAFEProgramFromBuffer(Utilities.Strings.SafeProgramName(parentControl.parentRobot.Name) + "_Program", this, false, inlineTargets, humanComments);
+            return compiler.ProgramFromBuffer(Utilities.Strings.SafeProgramName(parentControl.parentRobot.Name) + "_Program", this, false, inlineTargets, humanComments, conf);
         }
 
         /// <summary>
@@ -375,7 +378,7 @@ namespace Machina
         /// <returns></returns>
         public List<string> ProgramFromBlock(bool inlineTargets, bool humanComments)
         {
-            return compiler.UNSAFEProgramFromBuffer(Utilities.Strings.SafeProgramName(parentControl.parentRobot.Name) + "_Program", this, true, inlineTargets, humanComments);
+            return compiler.ProgramFromBuffer(Utilities.Strings.SafeProgramName(parentControl.parentRobot.Name) + "_Program", this, true, inlineTargets, humanComments);
         }
 
         public void LogBufferedActions()
@@ -445,6 +448,7 @@ namespace Machina
             { typeof (ActionTranslation),               (act, robCur) => robCur.ApplyAction((ActionTranslation) act) },
             { typeof (ActionRotation),                  (act, robCur) => robCur.ApplyAction((ActionRotation) act) },
             { typeof (ActionTransformation),            (act, robCur) => robCur.ApplyAction((ActionTransformation) act) },
+            { typeof (ActionSolvedTransformation),      (act, robCur) => robCur.ApplyAction((ActionSolvedTransformation) act) },
             { typeof (ActionAxes),                      (act, robCur) => robCur.ApplyAction((ActionAxes) act) },
             { typeof (ActionMessage),                   (act, robCur) => robCur.ApplyAction((ActionMessage) act) },
             { typeof (ActionWait),                      (act, robCur) => robCur.ApplyAction((ActionWait) act) },
@@ -461,7 +465,7 @@ namespace Machina
             { typeof (ActionSetToolRef),                (act, robCur) => robCur.ApplyAction((ActionSetToolRef) act) },
             { typeof (ActionSetWorkplaneRef),           (act, robCur) => robCur.ApplyAction((ActionSetWorkplaneRef) act) },
             { typeof (ActionDEDParmaters),              (act, robCur) => robCur.ApplyAction((ActionDEDParmaters) act) },
-            { typeof (ActionDED),                       (act, robCur) => robCur.ApplyAction((ActionDED) act) },
+            { typeof (ActionDEDSolvedTransform),                       (act, robCur) => robCur.ApplyAction((ActionDEDSolvedTransform) act) },
             { typeof (ActionExternalAxis),              (act, robCur) => robCur.ApplyAction((ActionExternalAxis) act) },
             { typeof (ActionCustomCode),                (act, robCur) => robCur.ApplyAction((ActionCustomCode) act) },
             { typeof (ActionArmAngle),                  (act, robCur) => robCur.ApplyAction((ActionArmAngle) act) }
@@ -1160,6 +1164,37 @@ namespace Machina
         }
 
         /// <summary>
+        /// TESTING - DED
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public bool ApplyAction(ActionSolvedTransformation action)
+        {
+            Vector newPos;
+            Rotation newRot;
+
+            // Absolute transform
+            newPos = new Vector(action.translation);
+            newRot = new Rotation(action.rotation);
+
+            prevPosition = position;
+            position = newPos;
+            prevRotation = rotation;
+            rotation = newRot;
+
+            prevAxes = axes;
+            axes = null;  // flag joints as null to avoid Joint instructions using obsolete data
+
+            // Set the config data.
+            Cf1 = action.Cf1;
+            Cf4 = action.Cf4;
+            Cf6 = action.Cf6;
+            Cfx = action.Cfx;
+
+            return true;
+        }
+
+        /// <summary>
         /// This is just to write start/end boilerplates for 3D printers. 
         /// </summary>
         /// <param name="action"></param>
@@ -1217,7 +1252,7 @@ namespace Machina
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
-        public bool ApplyAction(ActionDED action)
+        public bool ApplyAction(ActionDEDSolvedTransform action)
         {
             Vector newPos;
             Rotation newRot;
@@ -1233,6 +1268,12 @@ namespace Machina
 
             prevAxes = axes;
             axes = null;  // flag joints as null to avoid Joint instructions using obsolete data
+
+            // Set the config data.
+            Cf1 = action.Cf1;
+            Cf4 = action.Cf4;
+            Cf6 = action.Cf6;
+            Cfx = action.Cfx;
 
             return true;
         }

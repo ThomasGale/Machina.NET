@@ -44,13 +44,13 @@ namespace Machina
 
         /// <summary>
         /// Creates a textual program representation of a set of Actions using a brand-specific RobotCursor.
-        /// WARNING: this method is EXTREMELY UNSAFE; it performs no IK calculations, assigns default [0,0,0,0] 
+        /// WARNING: this method can be EXTREMELY UNSAFE - if you don't provide config it performs no IK calculations, assigns default [0,0,0,0] 
         /// robot configuration and assumes the robot controller will figure out the correct one.
         /// </summary>
         /// <param name="programName"></param>
         /// <param name="writePointer"></param>
         /// <returns></returns>
-        public abstract List<string> UNSAFEProgramFromBuffer(string programName, RobotCursor writer, bool block, bool inlineTargets, bool humanComments);
+        public abstract List<string> ProgramFromBuffer(string programName, RobotCursor writer, bool block, bool inlineTargets, bool humanComments, bool conf = false);
 
         public List<String> GenerateDisclaimerHeader(string programName)
         {

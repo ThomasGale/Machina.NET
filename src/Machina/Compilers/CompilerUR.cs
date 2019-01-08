@@ -41,7 +41,7 @@ namespace Machina
         /// <param name="writePointer"></param>
         /// <param name="block">Use actions in waiting queue or buffer?</param>
         /// <returns></returns>
-        public override List<string> UNSAFEProgramFromBuffer(string programName, RobotCursor writer, bool block, bool inlineTargets, bool humanComments)
+        public override List<string> ProgramFromBuffer(string programName, RobotCursor writer, bool block, bool inlineTargets, bool humanComments, bool conf = false)
         {
             // @TODO: deprecate all instantiation shit, and make compilers be mostly static 
             //ADD_ACTION_STRING = humanComments;
