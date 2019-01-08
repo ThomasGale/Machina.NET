@@ -48,14 +48,14 @@ namespace Machina
 
         public override string ToString()
         {
-            return string.Format("Transform: move to {0} mm and rotate to {1} with config [{2},{3},{4},{5}]", translation, new Orientation(rotation), Cf1, Cf4, Cf6, Cfx);
+            return string.Format("Solved Transform: move to {0} mm and rotate to {1} with config [{2},{3},{4},{5}]", translation, new Orientation(rotation), Cf1, Cf4, Cf6, Cfx);
         }
 
         public override string ToInstruction()
         {
             Orientation ori = new Orientation(this.rotation);
 
-            return string.Format("TransformTo({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12});",
+            return string.Format("SolvedTransformTo({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12});",
                     Math.Round(this.translation.X, Geometry.STRING_ROUND_DECIMALS_MM),
                     Math.Round(this.translation.Y, Geometry.STRING_ROUND_DECIMALS_MM),
                     Math.Round(this.translation.Z, Geometry.STRING_ROUND_DECIMALS_MM),
