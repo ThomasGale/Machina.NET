@@ -817,6 +817,14 @@ namespace Machina
 
 
         /// <summary>
+        /// tgale Hacking - Issue a request to change the tool reference device.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool IssueToolRefRequest(string toolReference) =>
+                IssueApplyActionRequest(new ActionSetToolRef(toolReference));
+
+        /// <summary>
         /// Issue a request for the device to stay idle for a certain amount of time.
         /// </summary>
         /// <param name="millis"></param>

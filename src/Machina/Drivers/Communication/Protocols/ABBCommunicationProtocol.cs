@@ -34,6 +34,13 @@ namespace Machina.Drivers.Communication.Protocols
         internal const int INST_EXT_JOINTS_JOINTTARGET = 16;    // (setextjoints a1 a2 a3 a4 a5 a6, applies only to robtarget)
         internal const int INST_CUSTOM_ACTION = 17;             // This is a wildcard for custom user functions that do not really fit in the Machina API (mainly Yumi gripping right now)
 
+        // tgale - DED / Solver hacking!
+        internal const int INST_TOOL_REF = 30;                  // SetToolRef "NAME"
+        internal const int INST_WOBJ_REF = 31;                  // SetWorkplaneRef "NAME"
+        internal const int INST_DED_PARAMETERS = 32;            // DEDParameter SYN_LINE WELD_MODE ARC_CORR DYNAMIC_CORR TRAVEL_SPEED WIRE_SPEED
+        internal const int INST_SOLVED_MOVEL = 33;              // MoveL X Y Z QW QX QY QZ CF1 CF4 CF6 CFX
+        internal const int INST_SOLVED_MOVEJ = 34;              // MoveJ X Y Z QW QX QY QZ CF1 CF4 CF6 CFX
+
         internal const int RES_VERSION = 20;                    // ">20 1 2 1;" Sends version numbers
         internal const int RES_POSE = 21;                       // ">21 400 300 500 0 0 1 0;"
         internal const int RES_JOINTS = 22;                     // ">22 0 0 0 0 90 0;"
@@ -66,7 +73,7 @@ namespace Machina.Drivers.Communication.Protocols
                 case ActionType.Rotation:
                 case ActionType.Transformation:
                     //// MoveL/J X Y Z QW QX QY QZ
-                    msgs.Add(string.Format(CultureInfo.InvariantCulture, 
+                    msgs.Add(string.Format(CultureInfo.InvariantCulture,
                         "{0}{1} {2} {3} {4} {5} {6} {7} {8} {9}{10}",
                         STR_MESSAGE_ID_CHAR,
                         action.Id,
@@ -78,6 +85,19 @@ namespace Machina.Drivers.Communication.Protocols
                         Math.Round(cursor.rotation.Q.X, Geometry.STRING_ROUND_DECIMALS_QUAT),
                         Math.Round(cursor.rotation.Q.Y, Geometry.STRING_ROUND_DECIMALS_QUAT),
                         Math.Round(cursor.rotation.Q.Z, Geometry.STRING_ROUND_DECIMALS_QUAT),
+                        STR_MESSAGE_END_CHAR));
+                    break;
+
+                // tgale: DED custom stuff.
+                case ActionType.SetToolRef:
+                    // Try to find an existing tool in system module of same tooldata identifier and set as the active tool.
+                    var actionSetToolRef = (ActionSetToolRef)action;
+                    msgs.Add(string.Format(CultureInfo.InvariantCulture,
+                        "{0}{1} {2} \"{3}\"{4}",
+                        STR_MESSAGE_ID_CHAR,
+                        action.Id,
+                        INST_TOOL_REF,
+                        actionSetToolRef.toolName,
                         STR_MESSAGE_END_CHAR));
                     break;
 
@@ -99,7 +119,7 @@ namespace Machina.Drivers.Communication.Protocols
 
                 case ActionType.Speed:
                     // (setspeed V_TCP[V_ORI V_LEAX V_REAX]) --> this accepts more velocity params, but those are still not implemented in Machina... 
-                    msgs.Add(string.Format(CultureInfo.InvariantCulture,  
+                    msgs.Add(string.Format(CultureInfo.InvariantCulture,
                         "{0}{1} {2} {3}{4}",
                         STR_MESSAGE_ID_CHAR,
                         action.Id,
@@ -283,7 +303,7 @@ namespace Machina.Drivers.Communication.Protocols
                 case ActionType.ExternalAxis:
                     string @params, id;
                     ActionExternalAxis aea = action as ActionExternalAxis;
-                    
+
                     // Cartesian msg
                     if (aea.target == ExternalAxesTarget.All || aea.target == ExternalAxesTarget.Cartesian)
                     {
@@ -322,7 +342,7 @@ namespace Machina.Drivers.Communication.Protocols
                             @params,
                             STR_MESSAGE_END_CHAR));
                     }
-                    
+
                     break;
 
                 case ActionType.ArmAngle:
@@ -349,7 +369,7 @@ namespace Machina.Drivers.Communication.Protocols
                         acc.statement,
                         STR_MESSAGE_END_CHAR));
                     break;
-                    
+
                 // If the Action wasn't on the list above, it doesn't have a message representation...
                 default:
                     Logger.Verbose("Cannot stream action `" + action + "`");
@@ -371,7 +391,7 @@ namespace Machina.Drivers.Communication.Protocols
                 }
                 else
                 {
-                    param += Math.Round((double) extax[i], Geometry.STRING_ROUND_DECIMALS_MM)
+                    param += Math.Round((double)extax[i], Geometry.STRING_ROUND_DECIMALS_MM)
                         .ToString(CultureInfo.InvariantCulture);
                 }
 

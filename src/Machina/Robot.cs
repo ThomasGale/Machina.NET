@@ -1027,6 +1027,17 @@ namespace Machina
         }
 
         /// <summary>
+        /// tgale DED Hacking SetToolReference
+        /// </summary>
+        /// <param name="toolRef"></param>
+        /// <returns></returns>
+        public bool SetToolRef(string toolRef)
+        {
+            return c.IssueToolRefRequest(toolRef);
+        }
+
+
+        /// <summary>
         /// Display an internal comment in the compilation code. 
         /// Useful for internal annotations, reminders, etc. 
         /// </summary>

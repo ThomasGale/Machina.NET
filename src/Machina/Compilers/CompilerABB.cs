@@ -545,7 +545,7 @@ namespace Machina
                         "WObj:=WObj0");
                     break;
                 case ActionType.SolvedTransformation:
-                    dec = string.Format("    {0} {1}, {2}, {3}, {4}\\{5};",
+                    dec = string.Format("    {0} {1}, {2}, {3}, {4}\\WObj:={5};",
                         cursor.motionType == MotionType.Joint ? "MoveJ" : "MoveL",
                         GetSolvedRobTargetValue(cursor),
                         velNames[cursor.speed],
