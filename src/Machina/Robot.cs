@@ -1033,7 +1033,12 @@ namespace Machina
         /// <returns></returns>
         public bool SetToolRef(string toolRef)
         {
-            return c.IssueToolRefRequest(toolRef);
+            return c.IssueSetToolRefRequest(toolRef);
+        }
+
+        public bool SetWorkplaneRef(string workplaneRef)
+        {
+            return c.IssueSetWorkplaneRefRequest(workplaneRef);
         }
 
 

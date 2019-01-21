@@ -101,6 +101,18 @@ namespace Machina.Drivers.Communication.Protocols
                         STR_MESSAGE_END_CHAR));
                     break;
 
+                case ActionType.SetWorkplaneRef:
+                    // Try to find an existing tool in system module of same tooldata identifier and set as the active tool.
+                    var actionSetWorkplaneRef = (ActionSetWorkplaneRef)action;
+                    msgs.Add(string.Format(CultureInfo.InvariantCulture,
+                        "{0}{1} {2} \"{3}\"{4}",
+                        STR_MESSAGE_ID_CHAR,
+                        action.Id,
+                        INST_WOBJ_REF,
+                        actionSetWorkplaneRef.workplaneName,
+                        STR_MESSAGE_END_CHAR));
+                    break;
+
                 case ActionType.Axes:
                     // MoveAbsJ J1 J2 J3 J4 J5 J6
                     msgs.Add(string.Format(CultureInfo.InvariantCulture,

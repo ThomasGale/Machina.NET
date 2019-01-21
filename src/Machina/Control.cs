@@ -819,10 +819,18 @@ namespace Machina
         /// <summary>
         /// tgale Hacking - Issue a request to change the tool reference device.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="toolReference"></param>
         /// <returns></returns>
-        public bool IssueToolRefRequest(string toolReference) =>
-                IssueApplyActionRequest(new ActionSetToolRef(toolReference));
+        public bool IssueSetToolRefRequest(string toolReference) =>
+            IssueApplyActionRequest(new ActionSetToolRef(toolReference));
+
+        /// <summary>
+        /// tgale Hacking - Issue a request to change the workObject reference device.
+        /// </summary>
+        /// <param name="workplaneRef"></param>
+        /// <returns></returns>
+        public bool IssueSetWorkplaneRefRequest(string workplaneRef) =>
+            IssueApplyActionRequest(new ActionSetWorkplaneRef(workplaneRef));
 
         /// <summary>
         /// Issue a request for the device to stay idle for a certain amount of time.
