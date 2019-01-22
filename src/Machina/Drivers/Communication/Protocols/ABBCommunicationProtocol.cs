@@ -113,6 +113,27 @@ namespace Machina.Drivers.Communication.Protocols
                         STR_MESSAGE_END_CHAR));
                     break;
 
+                case ActionType.SolvedTransformation:
+                    //// MoveL/J X Y Z QW QX QY QZ CF1 CF4 CF6 CFX
+                    msgs.Add(string.Format(CultureInfo.InvariantCulture,
+                        "{0}{1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13}{14}",
+                        STR_MESSAGE_ID_CHAR,
+                        action.Id,
+                        cursor.motionType == MotionType.Linear ? INST_SOLVED_MOVEL : INST_SOLVED_MOVEJ,
+                        Math.Round(cursor.position.X, Geometry.STRING_ROUND_DECIMALS_MM),
+                        Math.Round(cursor.position.Y, Geometry.STRING_ROUND_DECIMALS_MM),
+                        Math.Round(cursor.position.Z, Geometry.STRING_ROUND_DECIMALS_MM),
+                        Math.Round(cursor.rotation.Q.W, Geometry.STRING_ROUND_DECIMALS_QUAT),
+                        Math.Round(cursor.rotation.Q.X, Geometry.STRING_ROUND_DECIMALS_QUAT),
+                        Math.Round(cursor.rotation.Q.Y, Geometry.STRING_ROUND_DECIMALS_QUAT),
+                        Math.Round(cursor.rotation.Q.Z, Geometry.STRING_ROUND_DECIMALS_QUAT),
+                        cursor.Cf1,
+                        cursor.Cf4,
+                        cursor.Cf6,
+                        cursor.Cfx,
+                        STR_MESSAGE_END_CHAR));
+                    break;
+
                 case ActionType.Axes:
                     // MoveAbsJ J1 J2 J3 J4 J5 J6
                     msgs.Add(string.Format(CultureInfo.InvariantCulture,

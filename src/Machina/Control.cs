@@ -32,7 +32,7 @@ namespace Machina
         public const double DEFAULT_ACCELERATION = 30;                          // default acc for new actions in mm/s^2 and deg/s^2; zero values let the controller figure out accelerations
         public const double DEFAULT_PRECISION = 5;                              // default precision for new actions
 
-        public const MotionType DEFAULT_MOTION_TYPE = MotionType.Linear;        // default motion type for new actions
+        public const MotionType DEFAULT_MOTION_TYPE = MotionType.Joint;        // default motion type for new actions
         public const ReferenceCS DEFAULT_REFCS = ReferenceCS.World;             // default reference coordinate system for relative transform actions
         public const ControlType DEFAULT_CONTROLMODE = ControlType.Offline;
         public const CycleType DEFAULT_RUNMODE = CycleType.Once;
@@ -831,6 +831,17 @@ namespace Machina
         /// <returns></returns>
         public bool IssueSetWorkplaneRefRequest(string workplaneRef) =>
             IssueApplyActionRequest(new ActionSetWorkplaneRef(workplaneRef));
+
+        /// <summary>
+        /// tgale Hacking - Issue a Translation + Rotation + solved config action request
+        /// </summary>
+        /// <param name="trans"></param>
+        /// <param name="rot"></param>
+        /// <param name="rel"></param>
+        /// <param name="translationFirst"></param>
+        /// <returns></returns>
+        public bool IssueSolvedTransformationRequest(Vector trans, Rotation rot, int cf1, int cf4, int cf6, int cfx) =>
+                IssueApplyActionRequest(new ActionSolvedTransformation(trans, rot, cf1, cf4, cf6, cfx));
 
         /// <summary>
         /// Issue a request for the device to stay idle for a certain amount of time.

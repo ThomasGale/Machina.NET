@@ -1036,10 +1036,53 @@ namespace Machina
             return c.IssueSetToolRefRequest(toolRef);
         }
 
+        /// <summary>
+        /// tgale DED Hacking SetWorkplaneRef
+        /// </summary>
+        /// <param name="workplaneRef"></param>
+        /// <returns></returns>
         public bool SetWorkplaneRef(string workplaneRef)
         {
             return c.IssueSetWorkplaneRefRequest(workplaneRef);
         }
+
+        /// <summary>
+        /// tgale DED Hacking. Absolute transformation with active tool and wobj with addition config data (fully solved)
+        /// </summary>
+        /// <param name="orientation"></param>
+        /// <param name="position"></param>
+        /// <param name="cf1"></param>
+        /// <param name="cf4"></param>
+        /// <param name="cf6"></param>
+        /// <param name="cfx"></param>
+        /// <returns></returns>
+        public bool SolvedTransformTo(Orientation orientation, Point position, int cf1, int cf4, int cf6, int cfx)
+        {
+            return c.IssueSolvedTransformationRequest(position, orientation, cf1, cf4, cf6, cfx);
+        }
+
+        /// <summary>
+        /// tgale DED Hacking. Absolute transformation with active tool and wobj with addition config data (fully solved)
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="vX0"></param>
+        /// <param name="vX1"></param>
+        /// <param name="vX2"></param>
+        /// <param name="vY0"></param>
+        /// <param name="vY1"></param>
+        /// <param name="vY2"></param>
+        /// <param name="cf1"></param>
+        /// <param name="cf4"></param>
+        /// <param name="cf6"></param>
+        /// <param name="cfx"></param>
+        /// <returns></returns>
+        public bool SolvedTransformTo(double x, double y, double z, double vX0, double vX1, double vX2, double vY0, double vY1, double vY2, int cf1, int cf4, int cf6, int cfx)
+        {
+            return c.IssueSolvedTransformationRequest(new Vector(x, y, z), new Orientation(vX0, vX1, vX2, vY0, vY1, vY2), cf1, cf4, cf6, cfx);
+        }
+
 
 
         /// <summary>
