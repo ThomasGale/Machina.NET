@@ -1047,6 +1047,17 @@ namespace Machina
         }
 
         /// <summary>
+        /// tgale DED Hacking Set parameters.
+        /// </summary>
+        /// <param name="travelSpeed"></param>
+        /// <param name="materialFlow"></param>
+        /// <returns></returns>
+        public bool SetDEDParameters(double travelSpeed, double materialFlow)
+        {
+            return c.IssueSetDEDParametersRequest(travelSpeed, materialFlow);
+        }
+
+        /// <summary>
         /// tgale DED Hacking. Absolute transformation with active tool and wobj with addition config data (fully solved)
         /// </summary>
         /// <param name="orientation"></param>

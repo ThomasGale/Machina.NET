@@ -833,6 +833,15 @@ namespace Machina
             IssueApplyActionRequest(new ActionSetWorkplaneRef(workplaneRef));
 
         /// <summary>
+        /// tgale Hacking - Issue a request to set the DED parameters.
+        /// </summary>
+        /// <param name="travelSpeed"></param>
+        /// <param name="materialFlow"></param>
+        /// <returns></returns>
+        public bool IssueSetDEDParametersRequest(double travelSpeed, double materialFlow) =>
+            IssueApplyActionRequest(new ActionDEDParmaters(travelSpeed, materialFlow));
+
+        /// <summary>
         /// tgale Hacking - Issue a Translation + Rotation + solved config action request
         /// </summary>
         /// <param name="trans"></param>

@@ -40,6 +40,9 @@ namespace Machina.Drivers.Communication.Protocols
         internal const int INST_DED_PARAMETERS = 32;            // DEDParameter SYN_LINE WELD_MODE ARC_CORR DYNAMIC_CORR TRAVEL_SPEED WIRE_SPEED
         internal const int INST_SOLVED_MOVEL = 33;              // MoveL X Y Z QW QX QY QZ CF1 CF4 CF6 CFX
         internal const int INST_SOLVED_MOVEJ = 34;              // MoveJ X Y Z QW QX QY QZ CF1 CF4 CF6 CFX
+        internal const int INST_SOLVED_ARCLSTART = 35;          // ArcLStart X Y Z QW QX QY QZ CF1 CF4 CF6 CFX(use current DEDParameters)
+        internal const int INST_SOLVED_ARCL = 36;               // ArcL X Y Z QW QX QY QZ CF1 CF4 CF6 CFX(use current DEDParameters)
+        internal const int INST_SOLVED_ARCLEND = 37;  			// ArcLEnd X Y Z QW QX QY QZ CF1 CF4 CF6 CFX(use current DEDParameters)
 
         internal const int RES_VERSION = 20;                    // ">20 1 2 1;" Sends version numbers
         internal const int RES_POSE = 21;                       // ">21 400 300 500 0 0 1 0;"
@@ -110,6 +113,23 @@ namespace Machina.Drivers.Communication.Protocols
                         action.Id,
                         INST_WOBJ_REF,
                         actionSetWorkplaneRef.workplaneName,
+                        STR_MESSAGE_END_CHAR));
+                    break;
+
+                case ActionType.DEDParameter:
+                    // Send DED data through message.
+                    var actionDEDParameter = (ActionDEDParmaters)action;
+                    msgs.Add(string.Format(CultureInfo.InvariantCulture,
+                        "{0}{1} {2} {3} {4} {5} {6} {7} {8}{9}",
+                        STR_MESSAGE_ID_CHAR,
+                        action.Id,
+                        INST_DED_PARAMETERS,
+                        actionDEDParameter.synergicLine,
+                        actionDEDParameter.weldingMode,
+                        actionDEDParameter.arcLengthCorrection,
+                        actionDEDParameter.dyanamicEPENCorrection,
+                        actionDEDParameter.travelSpeed,
+                        actionDEDParameter.materialFlow,
                         STR_MESSAGE_END_CHAR));
                     break;
 
