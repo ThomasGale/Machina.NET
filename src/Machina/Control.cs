@@ -853,6 +853,21 @@ namespace Machina
                 IssueApplyActionRequest(new ActionSolvedTransformation(trans, rot, cf1, cf4, cf6, cfx));
 
         /// <summary>
+        /// tgale Hacking - Issue a DED welding mode + Translation + Rotation + solved config action request
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <param name="trans"></param>
+        /// <param name="rot"></param>
+        /// <param name="cf1"></param>
+        /// <param name="cf4"></param>
+        /// <param name="cf6"></param>
+        /// <param name="cfx"></param>
+        /// <returns></returns>
+        public bool IssueSolvedDEDTransformationRequest(Vector trans, Rotation rot, int cf1, int cf4, int cf6, int cfx, ActionDEDSolvedTransform.DEDMode mode) =>
+            IssueApplyActionRequest(new ActionDEDSolvedTransform(trans, rot, cf1, cf4, cf6, cfx, mode));
+
+
+        /// <summary>
         /// Issue a request for the device to stay idle for a certain amount of time.
         /// </summary>
         /// <param name="millis"></param>

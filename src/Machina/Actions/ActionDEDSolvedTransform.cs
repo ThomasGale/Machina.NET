@@ -31,10 +31,10 @@ namespace Machina
 
         public DEDMode mode;
   
-        public override ActionType Type => ActionType.ActionDEDSolvedTransform;
+        public override ActionType Type => ActionType.DEDSolvedTransform;
 
-        public ActionDEDSolvedTransform(DEDMode mode, double x, double y, double z, double vx0, double vx1, double vx2, double vy0,
-            double vy1, double vy2, int cf1, int cf4, int cf6, int cfx) : base()
+        public ActionDEDSolvedTransform(double x, double y, double z, double vx0, double vx1, double vx2, double vy0,
+            double vy1, double vy2, int cf1, int cf4, int cf6, int cfx, DEDMode mode) : base()
         {
             this.mode = mode;
             this.translation = new Vector(x, y, z);
@@ -45,7 +45,7 @@ namespace Machina
             Cfx = cfx;
         }
 
-        public ActionDEDSolvedTransform(DEDMode mode, Vector translation, Rotation rotation, int cf1, int cf4, int cf6, int cfx) : base()
+        public ActionDEDSolvedTransform(Vector translation, Rotation rotation, int cf1, int cf4, int cf6, int cfx, DEDMode mode) : base()
         {
             this.mode = mode;
             this.translation = new Vector(translation);  // shallow copy
@@ -75,8 +75,8 @@ namespace Machina
                     Math.Round(ori.YAxis.X, Geometry.STRING_ROUND_DECIMALS_MM),
                     Math.Round(ori.YAxis.Y, Geometry.STRING_ROUND_DECIMALS_MM),
                     Math.Round(ori.YAxis.Z, Geometry.STRING_ROUND_DECIMALS_MM),
-                    this.mode.ToString(),
-                    Cf1, Cf4, Cf6, Cfx
+                    Cf1, Cf4, Cf6, Cfx,
+                    (int)this.mode
                 );
         }
     }

@@ -1094,7 +1094,28 @@ namespace Machina
             return c.IssueSolvedTransformationRequest(new Vector(x, y, z), new Orientation(vX0, vX1, vX2, vY0, vY1, vY2), cf1, cf4, cf6, cfx);
         }
 
-
+        /// <summary>
+        /// tgale DED Hacking. Absolute transformation with active tool and wobj with addition config data (fully solved) for DED Arc process.
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="vX0"></param>
+        /// <param name="vX1"></param>
+        /// <param name="vX2"></param>
+        /// <param name="vY0"></param>
+        /// <param name="vY1"></param>
+        /// <param name="vY2"></param>
+        /// <param name="cf1"></param>
+        /// <param name="cf4"></param>
+        /// <param name="cf6"></param>
+        /// <param name="cfx"></param>
+        /// <returns></returns>
+        public bool SolvedDEDTransformTo(double x, double y, double z, double vX0, double vX1, double vX2, double vY0, double vY1, double vY2, int cf1, int cf4, int cf6, int cfx, ActionDEDSolvedTransform.DEDMode mode)
+        {
+            return c.IssueSolvedDEDTransformationRequest(new Vector(x, y, z), new Orientation(vX0, vX1, vX2, vY0, vY1, vY2), cf1, cf4, cf6, cfx, mode);
+        }
 
         /// <summary>
         /// Display an internal comment in the compilation code. 

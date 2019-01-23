@@ -22,7 +22,7 @@ namespace Machina
         SolvedTransformation,
         SetWorkplaneRef,
         SetToolRef,
-        ActionDEDSolvedTransform,
+        DEDSolvedTransform,
         DEDParameter,
         Axes,
         Message,

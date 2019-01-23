@@ -572,7 +572,7 @@ namespace Machina
                         commChar,
                         dedParameters.Id);
                     break;
-                case ActionType.ActionDEDSolvedTransform:
+                case ActionType.DEDSolvedTransform:
                     // Get the DED object;
                     var actionDED = action as ActionDEDSolvedTransform;
 

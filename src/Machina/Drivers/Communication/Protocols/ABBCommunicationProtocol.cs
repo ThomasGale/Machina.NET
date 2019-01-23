@@ -40,9 +40,7 @@ namespace Machina.Drivers.Communication.Protocols
         internal const int INST_DED_PARAMETERS = 32;            // DEDParameter SYN_LINE WELD_MODE ARC_CORR DYNAMIC_CORR TRAVEL_SPEED WIRE_SPEED
         internal const int INST_SOLVED_MOVEL = 33;              // MoveL X Y Z QW QX QY QZ CF1 CF4 CF6 CFX
         internal const int INST_SOLVED_MOVEJ = 34;              // MoveJ X Y Z QW QX QY QZ CF1 CF4 CF6 CFX
-        internal const int INST_SOLVED_ARCLSTART = 35;          // ArcLStart X Y Z QW QX QY QZ CF1 CF4 CF6 CFX(use current DEDParameters)
-        internal const int INST_SOLVED_ARCL = 36;               // ArcL X Y Z QW QX QY QZ CF1 CF4 CF6 CFX(use current DEDParameters)
-        internal const int INST_SOLVED_ARCLEND = 37;  			// ArcLEnd X Y Z QW QX QY QZ CF1 CF4 CF6 CFX(use current DEDParameters)
+        internal const int INST_SOLVED_ARCL = 35;               // DEDSolvedTransformTo X Y Z QW QX QY QZ CF1 CF4 CF6 CFX(use 
 
         internal const int RES_VERSION = 20;                    // ">20 1 2 1;" Sends version numbers
         internal const int RES_POSE = 21;                       // ">21 400 300 500 0 0 1 0;"
@@ -151,6 +149,29 @@ namespace Machina.Drivers.Communication.Protocols
                         cursor.Cf4,
                         cursor.Cf6,
                         cursor.Cfx,
+                        STR_MESSAGE_END_CHAR));
+                    break;
+
+                case ActionType.DEDSolvedTransform:
+                    //// ArcLStart / ArcL / ArcLEnd X Y Z QW QX QY QZ CF1 CF4 CF6 CFX
+                    var actionDEDSolvedTransform = (ActionDEDSolvedTransform)action;
+                    msgs.Add(string.Format(CultureInfo.InvariantCulture,
+                        "{0}{1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14}{15}",
+                        STR_MESSAGE_ID_CHAR,
+                        action.Id,
+                        INST_SOLVED_ARCL,
+                        Math.Round(cursor.position.X, Geometry.STRING_ROUND_DECIMALS_MM),
+                        Math.Round(cursor.position.Y, Geometry.STRING_ROUND_DECIMALS_MM),
+                        Math.Round(cursor.position.Z, Geometry.STRING_ROUND_DECIMALS_MM),
+                        Math.Round(cursor.rotation.Q.W, Geometry.STRING_ROUND_DECIMALS_QUAT),
+                        Math.Round(cursor.rotation.Q.X, Geometry.STRING_ROUND_DECIMALS_QUAT),
+                        Math.Round(cursor.rotation.Q.Y, Geometry.STRING_ROUND_DECIMALS_QUAT),
+                        Math.Round(cursor.rotation.Q.Z, Geometry.STRING_ROUND_DECIMALS_QUAT),
+                        cursor.Cf1,
+                        cursor.Cf4,
+                        cursor.Cf6,
+                        cursor.Cfx,
+                        (int)actionDEDSolvedTransform.mode,
                         STR_MESSAGE_END_CHAR));
                     break;
 
